@@ -9,6 +9,7 @@ export default function Error({
   error: Error;
   reset: () => void;
 }) {
+  if (error.message.includes("JSON")) redirect("/");
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="aspect-video rounded border-2 border-red-800 bg-red-200 md:w-1/3">

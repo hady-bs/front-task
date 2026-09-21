@@ -1,38 +1,31 @@
 import { Product } from "@/app/_models/types";
+import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-
-function StarRating({ rate, count }: { rate: number; count: number }) {
-  return (
-    <div className="flex items-center gap-2 text-sm">
-      <span className="font-medium text-black">{rate.toFixed(1)}</span>
-      {Array.from({ length: 5 }).map((item, index) => {
-        const ratingValue: number = Number(rate.toFixed());
-        if (index + 1 <= ratingValue) {
-          return (
-            <span className={"text-black"} key={index}>
-              ★
-            </span>
-          );
-        } else
-          return (
-            <span className="text-gray-400" key={index}>
-              ★
-            </span>
-          );
-      })}
-
-      <span className="text-gray-500">({count} reviews)</span>
-    </div>
-  );
-}
+import { redirect } from "next/navigation";
+type PageProps = {
+  params: Promise<{ id: string }>;
+};
 
 async function getProduct(id: number): Promise<Product> {
   const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-  if (!response.ok) throw new Error("Product not found");
+  if (response.status == 404) redirect("/");
+  if (!response.ok) throw new Error("check your connection");
+
   return response.json();
 }
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProduct(Number(id));
 
+  return {
+    title: product.title,
+    description: product.description,
+    keywords: [product.title, product.category, "online store", "product"],
+  };
+}
 export default async function Page({
   params,
 }: {
@@ -101,5 +94,29 @@ export default async function Page({
         </div>
       </div>
     </main>
+  );
+}
+function StarRating({ rate, count }: { rate: number; count: number }) {
+  return (
+    <div className="flex items-center gap-2 text-sm">
+      <span className="font-medium text-black">{rate.toFixed(1)}</span>
+      {Array.from({ length: 5 }).map((item, index) => {
+        const ratingValue: number = Number(rate.toFixed());
+        if (index + 1 <= ratingValue) {
+          return (
+            <span className={"text-black"} key={index}>
+              ★
+            </span>
+          );
+        } else
+          return (
+            <span className="text-gray-400" key={index}>
+              ★
+            </span>
+          );
+      })}
+
+      <span className="text-gray-500">({count} reviews)</span>
+    </div>
   );
 }
