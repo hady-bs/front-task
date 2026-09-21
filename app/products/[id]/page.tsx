@@ -7,7 +7,7 @@ function StarRating({ rate, count }: { rate: number; count: number }) {
     <div className="flex items-center gap-2 text-sm">
       <span className="font-medium text-black">{rate.toFixed(1)}</span>
       {Array.from({ length: 5 }).map((item, index) => {
-        const ratingValue: number = Number(rate.toFixed(1));
+        const ratingValue: number = Number(rate.toFixed());
         if (index + 1 <= ratingValue) {
           return (
             <span className={"text-black"} key={index}>
